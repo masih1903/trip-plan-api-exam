@@ -1,0 +1,49 @@
+POST {{URL}}
+Content-Type: application/json
+
+{
+  "startTime": "2024-07-10T15:00:00",
+  "endTime": "2024-07-20T10:00:00",
+  "startPosition": "Maldives",
+  "name": "Family Beach Vacation",
+  "price": 5000.00,
+  "category": "FAMILY"
+}
+
+###
+
+GET {{URL}}/1
+
+###
+
+GET {{URL}}
+
+###
+
+PUT {{URL}}/1
+Content-Type: application/json
+
+{
+  "startTime": "2025-01-15T06:00:00",
+  "endTime": "2025-01-25T18:00:00",
+  "startPosition": "Himalayas",
+  "name": "Adventure Mountain Trek",
+  "price": 1500.00,
+  "category": "ADVENTURE"
+}
+
+###
+
+DELETE {{URL}}/3
+
+###
+
+PUT {{URL}}/1/guides/1
+
+###
+
+GET {{URL}}/guides/1/trips
+
+###
+
+GET {{URL}}/categories/ADVENTURE
