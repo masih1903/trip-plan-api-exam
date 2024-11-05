@@ -19,9 +19,11 @@ public class GuideRoute {
         return () ->
         {
 
-            post("/", guideController::create, Role.ANYONE);
+            post("/", guideController::create, Role.ADMIN);
             get("/", guideController::getAll, Role.ANYONE);
             get("/overview", guideController::getGuideTripOverview, Role.ANYONE);
+            delete("/{id}", guideController::delete, Role.ADMIN);
+            get("/totalprice", guideController::getGuideOverviewTotalPrice, Role.ANYONE);
 
 
         };

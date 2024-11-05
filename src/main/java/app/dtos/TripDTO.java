@@ -6,6 +6,7 @@ import app.enums.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class TripDTO {
     private String name;
     private double price;
     private Category category;
+    private List<PackingItemDTO> packingItems;
+
 
     public TripDTO(LocalDateTime startTime, LocalDateTime endTime, String startPosition, String name, double price, Category category) {
         this.startTime = startTime;

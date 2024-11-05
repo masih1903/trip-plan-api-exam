@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,6 +35,7 @@ public class Trip {
     private Category category;
 
     @ManyToOne
+    //@JsonBackReference // Prevents infinite loop by managing this side of the relationship and shows trips also connected to guide
     @JsonIgnore
     private Guide guide;
 
@@ -56,5 +58,4 @@ public class Trip {
         this.category = tripDTO.getCategory();
 
     }
-
 }

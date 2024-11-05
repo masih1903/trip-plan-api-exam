@@ -1,10 +1,14 @@
 package app.controllers;
 
+import app.config.Populator;
 import app.daos.TripDAO;
+import app.dtos.PackingItemDTO;
+import app.dtos.PackingListDTO;
 import app.dtos.TripDTO;
 import app.entities.Trip;
 import app.enums.Category;
 import app.exceptions.ApiException;
+import app.services.PackingService;
 import io.javalin.http.Context;
 
 import java.util.List;
@@ -14,9 +18,11 @@ import java.util.stream.Collectors;
 public class TripController implements IController {
 
     private final TripDAO tripDAO;
+    private final Populator populator;
 
-    public TripController(TripDAO tripDAO) {
+    public TripController(TripDAO tripDAO, Populator populator) {
         this.tripDAO = tripDAO;
+        this.populator = populator;
     }
 
     @Override
@@ -25,16 +31,25 @@ public class TripController implements IController {
         try {
             Integer id = Integer.parseInt(ctx.pathParam("id"));
             Trip trip = tripDAO.getById(id);
+
             if (trip == null) {
                 throw new ApiException(404, "Trip with ID " + id + " not found");
             }
+
             TripDTO tripDTO = new TripDTO(trip);
+            // Fetch packing items based on the trip's category
+            List<PackingItemDTO> packingItems = fetchPackingItemsByCategory(trip.getCategory().name().toLowerCase());
+            // Set packing items in TripDTO
+            tripDTO.setPackingItems(packingItems);
+            // Respond with the enriched TripDTO
             ctx.res().setStatus(200);
             ctx.json(tripDTO, TripDTO.class);
+
         } catch (NumberFormatException e) {
             throw new ApiException(400, "Invalid ID format. Please provide a numeric ID.");
+        } catch (Exception e) {
+            throw new ApiException(500, "Error fetching trip or packing items: " + e.getMessage());
         }
-
     }
 
     @Override
@@ -126,7 +141,6 @@ public class TripController implements IController {
 
     public void getTripsByCategory(Context ctx) {
         try {
-            // Retrieve the category parameter from the request
             String categoryParam = ctx.pathParam("category");
             Category category = Category.valueOf(categoryParam.toUpperCase());
 
@@ -147,5 +161,39 @@ public class TripController implements IController {
         }
     }
 
+    public void getPackingItemsTotalWeight(Context ctx) {
+        int tripId = Integer.parseInt(ctx.pathParam("id"));
+        Trip trip = tripDAO.getById(tripId);
+
+        if (trip != null) {
+            String category = trip.getCategory().toString().toLowerCase();
+            PackingListDTO packingListDTO = PackingService.getPackingItemsByCategory(category);
+
+            if (packingListDTO != null) {
+                int totalWeight = packingListDTO.getItems().stream()
+                        .mapToInt(item -> item.getWeightInGrams() * item.getQuantity())
+                        .sum();
+
+                ctx.json(totalWeight);
+            } else {
+                ctx.status(404).result("Packing items not found for this category");
+            }
+        } else {
+            ctx.status(404).result("Trip not found");
+        }
+    }
+
+    public void populateDB(Context ctx) {
+        populator.populateTripsWithGuides();
+        ctx.res().setStatus(200);
+        ctx.result("Database populated with sample trips and guides.");
+    }
+
+    // Method to fetch packing items by category
+    private List<PackingItemDTO> fetchPackingItemsByCategory(String category) {
+        return PackingService.getPackingItemsByCategory(category).getItems();
+    }
 }
+
+
 

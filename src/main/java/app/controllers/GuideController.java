@@ -2,7 +2,7 @@ package app.controllers;
 
 import app.daos.GuideDAO;
 import app.dtos.GuideDTO;
-import app.dtos.TripDTO;
+import app.dtos.GuideOverviewDTO;
 import app.entities.Guide;
 import app.entities.Trip;
 import app.exceptions.ApiException;
@@ -19,7 +19,7 @@ public class GuideController {
         this.guideDAO = guideDAO;
     }
 
-    public  void getAll(Context ctx) {
+    public void getAll(Context ctx) {
 
         List<Guide> guides = guideDAO.getAll();
         if (guides.isEmpty()) {
@@ -41,19 +41,36 @@ public class GuideController {
 
     }
 
-    public void getGuideTripOverview(Context ctx) {
-        List<Guide> guides = guideDAO.getAll();
+    public void delete(Context ctx) {
+        Integer id = Integer.parseInt(ctx.pathParam("id"));
+        Guide guide = guideDAO.getById(id);
+        if (guide == null) {
+            throw new ApiException(404, "Guide not found.");
+        }
+        guideDAO.delete(id);
+        ctx.status(204);
+    }
 
-        // Map each guide to GuideDTO with total price calculation
-        List<GuideDTO> overview = guides.stream()
-                .map(GuideDTO::new) // Each GuideDTO will have the totalPrice calculated
-                .map(guideDTO -> {
-                    GuideDTO dto = new GuideDTO();
-                    dto.setId(guideDTO.getId());
-                    dto.setTotalPrice(guideDTO.getTotalPrice());
-                    return dto;
-                })
+    public void getGuideTripOverview(Context ctx) {
+        List<GuideDTO> overview = guideDAO.getAll().stream()
+                .map(GuideDTO::new)
                 .collect(Collectors.toList());
+
         ctx.status(200).json(overview);
     }
+
+    public void getGuideOverviewTotalPrice(Context ctx) {
+        List<Guide> guides = guideDAO.getAll();
+
+        // Map each guide to GuideOverviewDTO with only guideId and totalPrice
+        List<GuideOverviewDTO> overview = guides.stream()
+                .map(guide -> new GuideOverviewDTO(
+                        guide.getId(),
+                        guide.getTrips().stream().mapToDouble(Trip::getPrice).sum()
+                ))
+                .collect(Collectors.toList());
+
+        ctx.status(200).json(overview);
+    }
+
 }

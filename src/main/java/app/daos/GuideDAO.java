@@ -39,4 +39,14 @@ private final EntityManagerFactory emf;
             return guide;
         }
     }
+
+    public void delete(Integer id) {
+
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            Guide guide = em.find(Guide.class, id);
+            em.remove(guide);
+            em.getTransaction().commit();
+        }
+    }
 }

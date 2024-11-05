@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,9 +28,10 @@ public class Guide {
 
     private int yearsOfExperience;
 
-    @OneToMany(mappedBy = "guide", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "guide", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
+    //@JsonManagedReference // Prevents infinite loop by managing this side of the relationship and shows trips also connected to guide
     @JsonIgnore
-    private List<Trip> trips;
+    private List<Trip> trips = new ArrayList<>();
 
     public Guide(String firstName, String lastName, String email, String phone, int yearsOfExperience) {
         this.firstName = firstName;

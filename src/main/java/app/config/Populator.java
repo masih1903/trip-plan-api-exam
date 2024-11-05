@@ -24,7 +24,7 @@ public class Populator {
         Populator.tripDAO = tripDAO;
     }
 
-    public List<TripDTO> populateTrips() {
+    public List<TripDTO> populateTripsWithGuides() {
 
         if (emf == null) {
             throw new IllegalStateException("EntityManagerFactory is not initialized");

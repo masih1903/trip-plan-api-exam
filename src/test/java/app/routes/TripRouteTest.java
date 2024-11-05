@@ -16,14 +16,11 @@ import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.jar.JarEntry;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TripRouteTest {
@@ -58,7 +55,7 @@ class TripRouteTest {
     @BeforeEach
     void setUp() {
 
-        trips = populator.populateTrips();
+        trips = populator.populateTripsWithGuides();
         t1 = trips.get(0);
         t2 = trips.get(1);
         t3 = trips.get(2);
@@ -76,12 +73,9 @@ class TripRouteTest {
         }
     }
 
-
-
     @AfterEach
     void tearDown() {
         populator.cleanUp();
-
     }
 
     @AfterAll
@@ -92,13 +86,17 @@ class TripRouteTest {
     @Test
     void getTripById() {
 
+        TripDTO tripDTO =
+                given()
+                        .when()
+                        .get(BASE_URL + "/trips/1")
+                        .then()
+                        .log()
+                        .all().statusCode(200).extract().as(TripDTO.class);
 
-        TripDTO tripDTO = given().when().get(BASE_URL + "/trips/1")
-                .then().log().all().statusCode(200).extract().as(TripDTO.class);
-
-        assertThat(tripDTO, equalTo(t1));
-
-
+        assertThat(tripDTO.getId(), equalTo(t1.getId()));
+        assertThat(tripDTO.getName(), equalTo(t1.getName()));
+        assertThat(tripDTO.getPrice(), equalTo(t1.getPrice()));
     }
 
     @Test
@@ -124,7 +122,6 @@ class TripRouteTest {
         System.out.println("usertoken: " + userToken);
         System.out.println("admintoken: " + adminToken);
 
-
         TripDTO tripDTO = new TripDTO();
         tripDTO.setStartTime(LocalDateTime.of(2024, 7, 10, 15, 0));
         tripDTO.setEndTime(LocalDateTime.of(2024, 7, 20, 10, 0));
@@ -133,7 +130,6 @@ class TripRouteTest {
         tripDTO.setPrice(5000.00);
         tripDTO.setCategory(Category.FAMILY);
 
-        // Make a POST request to create the trip
         TripDTO createdTrip =
                 given()
                         .contentType("application/json")
@@ -148,7 +144,6 @@ class TripRouteTest {
                         .extract()
                         .as(TripDTO.class);
 
-        // Assertions to verify the created trip matches the input data
         assertThat(createdTrip.getStartTime(), equalTo(tripDTO.getStartTime()));
         assertThat(createdTrip.getEndTime(), equalTo(tripDTO.getEndTime()));
         assertThat(createdTrip.getStartPosition(), equalTo(tripDTO.getStartPosition()));
@@ -164,7 +159,6 @@ class TripRouteTest {
         System.out.println("usertoken: " + userToken);
         System.out.println("admintoken: " + adminToken);
 
-        // Create a TripDTO for the updated trip
         TripDTO updatedTrip = new TripDTO();
         updatedTrip.setStartTime(LocalDateTime.of(2025, 1, 15, 6, 0));
         updatedTrip.setEndTime(LocalDateTime.of(2025, 1, 25, 18, 0));
@@ -173,7 +167,6 @@ class TripRouteTest {
         updatedTrip.setPrice(1600.00);  // Updated price
         updatedTrip.setCategory(Category.ADVENTURE);
 
-        // Make a PUT request to update the trip
         TripDTO updatedTripResponse =
                 given()
                         .contentType("application/json")
@@ -186,15 +179,12 @@ class TripRouteTest {
                         .extract()
                         .as(TripDTO.class);
 
-        // Validate the updated fields
         assertThat(updatedTripResponse.getStartTime(), equalTo(updatedTrip.getStartTime()));
         assertThat(updatedTripResponse.getEndTime(), equalTo(updatedTrip.getEndTime()));
         assertThat(updatedTripResponse.getStartPosition(), equalTo(updatedTrip.getStartPosition()));
         assertThat(updatedTripResponse.getName(), equalTo(updatedTrip.getName()));
         assertThat(updatedTripResponse.getPrice(), equalTo(updatedTrip.getPrice()));
         assertThat(updatedTripResponse.getCategory(), equalTo(updatedTrip.getCategory()));
-
-
     }
 
     @Test

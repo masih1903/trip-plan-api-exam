@@ -1,18 +1,27 @@
+### createGuide
 POST {{URL}}
 Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
-  "firstName": "Jon",
+  "firstName": "Thomas",
   "lastName": "Targaryen",
-  "email": "jon.doe@example.com",
+  "email": "Thomas.doe@example.com",
   "phone": "123-456-7890",
-  "yearsOfExperience": 20
+  "yearsOfExperience": 25
 }
 
-###
-
+### getAllGuides
 GET {{URL}}
 
-###
-
+### getGuideTripOverview
 GET {{URL}}/overview
+
+### deleteGuide
+DELETE {{URL}}/1
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+### getGuideOverviewTotalPrice
+GET {{URL}}/totalprice

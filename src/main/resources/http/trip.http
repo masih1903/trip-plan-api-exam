@@ -1,27 +1,29 @@
+### createTrip
 POST {{URL}}
 Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
   "startTime": "2024-07-10T15:00:00",
   "endTime": "2024-07-20T10:00:00",
-  "startPosition": "Maldives",
+  "startPosition": "Malta",
   "name": "Family Beach Vacation",
   "price": 5000.00,
   "category": "FAMILY"
 }
 
-###
+### getTripById
+GET {{URL}}/4
 
-GET {{URL}}/1
-
-###
-
+### getAllTrips
 GET {{URL}}
 
-###
-
-PUT {{URL}}/1
+### updateTrip
+PUT {{URL}}/4
 Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
   "startTime": "2025-01-15T06:00:00",
@@ -32,18 +34,27 @@ Content-Type: application/json
   "category": "ADVENTURE"
 }
 
-###
+### deteleTrip
+DELETE {{URL}}/4
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
 
-DELETE {{URL}}/3
+### addGuideToTrip
+PUT {{URL}}/1/guides/2
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
 
-###
-
-PUT {{URL}}/1/guides/1
-
-###
-
+### getTripsByGuide
 GET {{URL}}/guides/1/trips
 
-###
-
+### getTripsByCategory
 GET {{URL}}/categories/ADVENTURE
+
+### populateDatabase
+POST {{URL}}/populate
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+### getPackingItemsTotalWeight
+GET {{URL}}/2/packing-items/total-weight
+
